@@ -12,9 +12,13 @@ export const register = async (req, res) => {
     const { name, email, password, phone } = req.body;
 
     // Check if user exists
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ 
+      $or: [{ email }, { phone: phone || null }] 
+    });
+    
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      const field = userExists.email === email ? 'Email' : 'Phone number';
+      return res.status(400).json({ message: `${field} already registered` });
     }
 
     // Create user
@@ -119,7 +123,9 @@ export const googleLogin = async (req, res) => {
   }
 };
 
-// Mobile OTP Service using Twilio Verify
+const otpStore = new Map();
+
+// Mobile OTP Service using Twilio Verify or In-Memory Mock
 export const sendOtp = async (req, res) => {
   try {
     const { phone } = req.body;
@@ -131,8 +137,12 @@ export const sendOtp = async (req, res) => {
     const isDevMock = !process.env.TWILIO_ACCOUNT_SID || process.env.TWILIO_ACCOUNT_SID === 'your_twilio_sid' || process.env.NODE_ENV === 'development';
 
     if (isDevMock) {
-      console.log(`[MOCK OTP] Sent to ${phone}: 123456`);
-      return res.json({ message: 'OTP sent successfully (Mock Mode)', status: 'pending', mock: true });
+      // Real-time generated Mock OTP
+      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      otpStore.set(phone, { otp: generatedOtp, expires: Date.now() + 5 * 60 * 1000 }); // 5 minutes expiry
+      console.log(`[REALTIME MOCK OTP] Sent to ${phone}: ${generatedOtp}`);
+      return res.json({ message: 'OTP sent successfully (Mock Mode)', status: 'pending', mock: true, otp: generatedOtp });
+      // Note: We're sending 'otp' in the response ONLY for testing reasons. In a real application, NEVER do this!
     }
 
     const verification = await twilioClient.verify.v2
@@ -158,10 +168,12 @@ export const verifyOtp = async (req, res) => {
     let isApproved = false;
 
     if (isDevMock) {
-      if (otp === '123456') {
+      const storedData = otpStore.get(phone);
+      if (storedData && storedData.otp === otp && storedData.expires > Date.now()) {
         isApproved = true;
+        otpStore.delete(phone); // Burn after use
       } else {
-        return res.status(401).json({ message: 'Invalid OTP (Mock expects 123456)' });
+        return res.status(401).json({ message: 'Invalid or expired OTP' });
       }
     } else {
       const verificationCheck = await twilioClient.verify.v2

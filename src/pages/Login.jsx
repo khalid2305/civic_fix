@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { Mail, Lock, Smartphone, Chrome, Eye, EyeOff, MapPin } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
+
 
 export default function Login() {
   const { t } = useTranslation();
@@ -38,7 +40,7 @@ export default function Login() {
     try {
       await loginWithGoogle();
       toast.success('Logged in with Google!');
-      navigate('/');
+      navigate('/dashboard');
     } catch { toast.error('Google login failed'); }
     setLoading(false);
   };
@@ -142,12 +144,26 @@ export default function Login() {
               <div style={{ padding: '20px 0', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
                 Sign in quickly with your Google account. No password needed.
               </div>
-              <button onClick={handleGoogle} disabled={loading} className="btn btn-ghost btn-lg" style={{ width: '100%', justifyContent: 'center', gap: '12px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🔵</span>
-                {loading ? 'Signing in...' : t('btn_google')}
-              </button>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <GoogleLogin
+                  onSuccess={async (credentialResponse) => {
+                    setLoading(true);
+                    try {
+                      await loginWithGoogle(credentialResponse.credential);
+                      toast.success('Logged in with Google!');
+                      navigate('/dashboard');
+                    } catch { toast.error('Google login failed'); }
+                    setLoading(false);
+                  }}
+                  onError={() => {
+                    toast.error('Google login failed setup or user closed popup');
+                  }}
+                  useOneTap
+                />
+              </div>
             </div>
           )}
+
 
           {/* OTP */}
           {tab === 'otp' && (
@@ -175,7 +191,7 @@ export default function Login() {
                 
                 {/* Dev Tip */}
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '12px', padding: '10px', background: 'rgba(59,130,246,0.05)', borderRadius: '8px', border: '1px dashed rgba(59,130,246,0.2)' }}>
-                  💡 {t('login_otp_tip') || 'Development Mode: Use code 123456 to test without actual SMS.'}
+                  💡 {t('login_otp_tip') || 'Development Mode: Check server console for your 6-digit OTP.'}
                 </p>
                 </>
               )}

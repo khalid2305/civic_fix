@@ -33,11 +33,11 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = async (idToken = 'mock_google_token') => {
     const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idToken: 'mock_google_token' })
+      body: JSON.stringify({ idToken })
     });
     
     const data = await response.json();

@@ -8,10 +8,12 @@ import { IssueProvider } from './contexts/IssueContext.jsx'
 import { ThemeProvider } from './contexts/ThemeContext.jsx'
 import { Toaster } from 'react-hot-toast'
 import { ErrorBoundary } from './ErrorBoundary.jsx'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy_client_id.apps.googleusercontent.com'}>
+      <ThemeProvider>
       <AuthProvider>
         <IssueProvider>
           <ErrorBoundary>
@@ -34,5 +36,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </IssueProvider>
       </AuthProvider>
     </ThemeProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>,
 )

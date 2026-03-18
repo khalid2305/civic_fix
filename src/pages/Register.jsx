@@ -23,8 +23,8 @@ export default function Register() {
     try {
       await register(form.name, form.email, form.phone, form.password);
       toast.success('Account created! Welcome to CivicFix!');
-      navigate('/');
-    } catch { toast.error('Registration failed'); }
+      navigate('/dashboard');
+    } catch (err) { toast.error(err.message || 'Registration failed'); }
     setLoading(false);
   };
 
