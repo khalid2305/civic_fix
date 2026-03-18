@@ -1,0 +1,417 @@
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useIssues } from '../contexts/IssueContext';
+import { useAuth } from '../contexts/AuthContext';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+  PieChart, Pie, Cell, LineChart, Line, Legend
+} from 'recharts';
+import { 
+  Shield, TrendingUp, AlertCircle, CheckCircle, Clock, 
+  Search, Filter, MapPin, ChevronRight, RefreshCw, Trash2, 
+  MoreVertical, Download, ExternalLink, Inbox, MessageSquare, Star
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const STATUS_OPTIONS = ['pending', 'in-progress', 'resolved', 'rejected'];
+const statusStyles = {
+  'pending': { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', shadow: 'rgba(245,158,11,0.2)' },
+  'in-progress': { color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', shadow: 'rgba(139,92,246,0.2)' },
+  'resolved': { color: '#10b981', bg: 'rgba(16,185,129,0.1)', shadow: 'rgba(16,185,129,0.2)' },
+  'rejected': { color: '#ef4444', bg: 'rgba(239,68,68,0.1)', shadow: 'rgba(239,68,68,0.2)' },
+  'Pending': { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', shadow: 'rgba(245,158,11,0.2)' },
+  'In Progress': { color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', shadow: 'rgba(139,92,246,0.2)' },
+  'Resolved': { color: '#10b981', bg: 'rgba(16,185,129,0.1)', shadow: 'rgba(16,185,129,0.2)' },
+  'Open': { color: '#3b82f6', bg: 'rgba(59,130,246,0.1)', shadow: 'rgba(59,130,246,0.2)' }
+};
+
+const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#64748b'];
+
+export default function AdminDashboard() {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { issues, departments, updateIssueStatus, reassignIssue, deleteIssue, fetchIssues } = useIssues();
+  
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'triage', 'stats'
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDept, setSelectedDept] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [feedback, setFeedback] = useState([]);
+
+  // Memoized filtered data
+  const filteredIssues = useMemo(() => {
+    return issues.filter(i => {
+      const matchSearch = i.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          i.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchDept = selectedDept === 'All' || (i.department?._id || i.department) === selectedDept;
+      const matchStatus = statusFilter === 'All' || i.status.toLowerCase() === statusFilter.toLowerCase();
+      const matchTab = activeTab === 'triage' ? i.category === 'Other' : true;
+      
+      return matchSearch && matchDept && matchStatus && matchTab;
+    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }, [issues, searchTerm, selectedDept, statusFilter, activeTab]);
+
+  const stats = useMemo(() => {
+    const total = issues.length;
+    const triage = issues.filter(i => i.category === 'Other').length;
+    const pending = issues.filter(i => ['pending', 'open'].includes(i.status.toLowerCase())).length;
+    const completed = issues.filter(i => i.status.toLowerCase() === 'resolved').length;
+    return { total, triage, pending, completed };
+  }, [issues]);
+
+  const handleStatusChange = async (id, status) => {
+    try {
+      await updateIssueStatus(id, status);
+      toast.success(`Status: ${status}`);
+    } catch { toast.error('Update failed'); }
+  };
+
+  const handleReassign = async (id, deptId) => {
+    try {
+      await reassignIssue(id, deptId);
+      toast.success('Reassigned successfully');
+    } catch { toast.error('Reassignment failed'); }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this issue?')) return;
+    try {
+      await deleteIssue(id);
+    } catch { toast.error('Delete failed'); }
+  };
+
+  const fetchFeedback = async () => {
+    try {
+      const token = localStorage.getItem('civicfix_token') || user?.token;
+      const res = await fetch('http://localhost:5000/api/feedback', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setFeedback(data);
+    } catch (e) { console.error('Error fetching feedback:', e); }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'feedback') {
+      fetchFeedback();
+    }
+  }, [activeTab]);
+
+  const handleRefresh = async () => {
+    toast.promise(
+      Promise.all([fetchIssues(), activeTab === 'feedback' ? fetchFeedback() : Promise.resolve()]),
+      { loading: 'Refreshing...', success: 'Data Refreshed', error: 'Refresh Failed' }
+    );
+  };
+
+  const handleExport = () => {
+    const data = activeTab === 'feedback' ? feedback : filteredIssues;
+    if (!data.length) return toast.error('No data to export');
+    
+    let csv = '';
+    const headers = Object.keys(data[0]).filter(k => typeof data[0][k] !== 'object' && !k.startsWith('_'));
+    csv += headers.join(',') + '\n';
+    
+    data.forEach(row => {
+      csv += headers.map(h => {
+        let val = row[h] === undefined || row[h] === null ? '' : String(row[h]);
+        return `"${val.replace(/"/g, '""')}"`;
+      }).join(',') + '\n';
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `civicfix_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+  };
+
+  return (
+    <div className="page-container" style={{ padding: '90px 0 60px', background: 'radial-gradient(circle at 50% 0%, rgba(59,130,246,0.05) 0%, transparent 50%)' }}>
+      <div className="container">
+        {/* Header Section */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <div style={{ padding: '10px', borderRadius: '12px', background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', boxShadow: '0 8px 20px rgba(59,130,246,0.3)' }}>
+                <Shield size={22} color="white" />
+              </div>
+              <h1 style={{ fontSize: '2rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em' }}>Command Center</h1>
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Welcome back, <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{user?.name}</span>. Managing civic governance efficiently.</p>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+             <button onClick={() => navigate('/admin/feedback')} className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+               <MessageSquare size={16} /> Feedback
+             </button>
+             <button onClick={handleRefresh} className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+               <RefreshCw size={16} /> Refresh
+             </button>
+             <button onClick={handleExport} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+               <Download size={16} /> Export Data
+             </button>
+          </div>
+        </div>
+
+        {/* Top Stats Orbs */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '40px' }}>
+          {[
+            { label: 'Total Complaints', value: stats.total, icon: <Inbox size={20} />, color: '#3b82f6' },
+            { label: 'Action Required (Other)', value: stats.triage, icon: <AlertCircle size={20} />, color: '#ef4444', highlight: stats.triage > 0 },
+            { label: 'Pending Review', value: stats.pending, icon: <Clock size={20} />, color: '#f59e0b' },
+            { label: 'Resolved Tickets', value: stats.completed, icon: <CheckCircle size={20} />, color: '#10b981' },
+          ].map((s, i) => (
+            <div key={i} className="glass-card" style={{ 
+              padding: '24px', 
+              position: 'relative', 
+              overflow: 'hidden',
+              border: s.highlight ? '1px solid rgba(239,68,68,0.3)' : '1px solid var(--border-glass)',
+              animation: 'fadeInUp 0.5s ease both',
+              animationDelay: `${i * 0.1}s`
+            }}>
+              {s.highlight && <div style={{ position: 'absolute', top: 0, right: 0, width: '4px', height: '100%', background: '#ef4444' }} />}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                <div style={{ color: s.color, background: `${s.color}15`, padding: '10px', borderRadius: '12px' }}>{s.icon}</div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>{s.value}</div>
+              </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Main Content Area */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '30px' }}>
+          
+          {/* Tabs and Filters */}
+          <div className="glass-card" style={{ padding: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div style={{ display: 'flex', gap: '4px' }}>
+              {[
+                { id: 'all', label: 'All Complaints', icon: <Inbox size={14} /> },
+                { id: 'triage', label: 'Triage (Others)', icon: <AlertCircle size={14} />, alert: stats.triage > 0 },
+                { id: 'stats', label: 'Analytics', icon: <TrendingUp size={14} /> },
+              ].map(t => (
+                <button 
+                  key={t.id}
+                  onClick={() => setActiveTab(t.id)}
+                  className={`btn btn-sm ${activeTab === t.id ? 'btn-primary' : 'btn-ghost'}`}
+                  style={{ gap: '8px', position: 'relative' }}
+                >
+                  {t.icon} {t.label}
+                  {t.alert && <span style={{ position: 'absolute', top: '-4px', right: '-4px', width: '8px', height: '8px', background: '#ef4444', borderRadius: '50%', border: '2px solid #070b14' }} />}
+                </button>
+              ))}
+            </div>
+
+            {activeTab !== 'stats' && (
+              <div style={{ display: 'flex', gap: '12px', flex: 1, justifyContent: 'flex-end' }}>
+                <div style={{ position: 'relative', width: '250px' }}>
+                  <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                  <input 
+                    type="text" placeholder="Quick search..." 
+                    className="form-input" value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                    style={{ paddingLeft: '34px', height: '36px', fontSize: '0.85rem' }} 
+                  />
+                </div>
+                <select 
+                  className="form-input" value={selectedDept} onChange={e => setSelectedDept(e.target.value)}
+                  style={{ minWidth: '180px', padding: '6px 10px', height: 'auto', fontSize: '0.85rem' }}
+                >
+                  <option value="All">All Departments</option>
+                  {departments.map(d => <option key={d._id || d.id} value={d._id || d.id}>{d.name}</option>)}
+                </select>
+                <select 
+                  className="form-input" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+                  style={{ minWidth: '140px', padding: '6px 10px', height: 'auto', fontSize: '0.85rem' }}
+                >
+                  <option value="All">All Status</option>
+                  {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
+                </select>
+              </div>
+            )}
+          </div>
+
+          {activeTab === 'stats' ? (
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+               <div className="glass-card" style={{ padding: '24px' }}>
+                  <h3 style={{ margin: '0 0 20px 0', fontSize: '1rem' }}>Resolution Trends</h3>
+                  <div style={{ height: '300px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={departments.map(d => ({
+                        name: d.short,
+                        total: issues.filter(i => (i.department?._id || i.department) === (d._id || d.id)).length,
+                        resolved: issues.filter(i => (i.department?._id || i.department) === (d._id || d.id) && i.status.toLowerCase() === 'resolved').length,
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                        <XAxis dataKey="name" tick={{ fill: '#64748b' }} />
+                        <YAxis tick={{ fill: '#64748b' }} />
+                        <Tooltip contentStyle={{ background: '#111827', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                        <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="resolved" fill="#10b981" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+               </div>
+               <div className="glass-card" style={{ padding: '24px' }}>
+                  <h3 style={{ margin: '0 0 20px 0', fontSize: '1rem' }}>Category Distribution</h3>
+                  <div style={{ height: '300px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={Object.entries(issues.reduce((acc, i) => { acc[i.category] = (acc[i.category] || 0) + 1; return acc; }, {}))
+                            .map(([name, value]) => ({ name, value }))}
+                          cx="50%" cy="50%" innerRadius={60} outerRadius={80} dataKey="value" paddingAngle={5}
+                        >
+                          {PIE_COLORS.map((color, i) => <Cell key={i} fill={color} />)}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+               </div>
+            </div>
+          ) : activeTab === 'feedback' ? (
+            <div className="glass-card" style={{ overflow: 'hidden', border: 'none' }}>
+              <div className="table-responsive">
+                <table className="data-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
+                  <thead>
+                    <tr style={{ background: 'transparent' }}>
+                      <th style={{ padding: '12px 20px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Date & Citizen</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Rating</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Feedback Message</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', textAlign: 'right' }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {feedback.map((fb) => (
+                      <tr key={fb._id} className="table-row-hover" style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px' }}>
+                         <td style={{ padding: '20px' }}>
+                            <div style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.85rem' }}>{fb.userId?.name || 'Anonymous'}</div>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{new Date(fb.createdAt).toLocaleDateString()}</div>
+                         </td>
+                         <td style={{ padding: '20px' }}>
+                            <div style={{ display: 'flex', color: '#f59e0b', gap: '2px' }}>
+                              {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={14} fill={i < fb.rating ? '#f59e0b' : 'transparent'} />)}
+                            </div>
+                         </td>
+                         <td style={{ padding: '20px', color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '400px' }}>
+                            {fb.message}
+                         </td>
+                         <td style={{ padding: '20px', textAlign: 'right' }}>
+                            <span className="badge badge-gray">{fb.status}</span>
+                         </td>
+                      </tr>
+                    ))}
+                    {feedback.length === 0 && (
+                      <tr><td colSpan="4" style={{ textAlign: 'center', padding: '40px' }}>No feedback received yet.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div className="glass-card" style={{ overflow: 'hidden', border: 'none' }}>
+              <div className="table-responsive">
+                <table className="data-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
+                  <thead>
+                    <tr style={{ background: 'transparent' }}>
+                      <th style={{ padding: '12px 20px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Complaint Details</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Department</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Status</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Reported By</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredIssues.map((issue) => {
+                      const ss = statusStyles[issue.status] || statusStyles['pending'];
+                      return (
+                        <tr key={issue._id || issue.id} className="table-row-hover" style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px' }}>
+                          <td style={{ padding: '20px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '48px', height: '48px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0 }}>
+                                <img src={issue.imageUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                              </div>
+                              <div>
+                                <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '4px' }}>{issue.title}</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span className="badge badge-gray" style={{ fontSize: '0.65rem' }}>{issue.category}</span>
+                                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                    <Clock size={12} /> {new Date(issue.createdAt).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td style={{ padding: '20px' }}>
+                            <select 
+                              value={issue.department?._id || issue.department}
+                              onChange={(e) => handleReassign(issue._id || issue.id, e.target.value)}
+                              className="form-input"
+                              style={{ 
+                                padding: '6px 10px', height: 'auto', fontSize: '0.8rem', width: '100%', minWidth: '180px',
+                                background: (issue.category === 'Other') ? 'rgba(239,68,68,0.05)' : 'transparent',
+                                border: (issue.category === 'Other') ? '1px solid rgba(239,68,68,0.2)' : '1px solid var(--border-glass)'
+                              }}
+                            >
+                              {departments.map(d => <option key={d._id || d.id} value={d._id || d.id}>{d.name}</option>)}
+                            </select>
+                          </td>
+                          <td style={{ padding: '20px' }}>
+                            <select 
+                              value={issue.status.toLowerCase()}
+                              onChange={(e) => handleStatusChange(issue._id || issue.id, e.target.value)}
+                              className="form-input"
+                              style={{ 
+                                padding: '6px 10px', height: 'auto', fontSize: '0.8rem', width: '100%', minWidth: '130px', fontWeight: 700,
+                                color: ss.color, backgroundColor: ss.bg, border: `1px solid ${ss.color}30`
+                              }}
+                            >
+                              {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
+                            </select>
+                          </td>
+                          <td style={{ padding: '20px' }}>
+                            <div style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.85rem' }}>{issue.createdBy?.name || 'Anonymous'}</div>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>ID: {(issue._id || issue.id).substring(0, 8)}</div>
+                          </td>
+                          <td style={{ padding: '20px', textAlign: 'right' }}>
+                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                               <button onClick={() => window.location.href = `/issues/${issue.id || issue._id}`} className="btn btn-ghost btn-xs" title="View Details">
+                                 <ExternalLink size={14} />
+                               </button>
+                               <button onClick={() => handleDelete(issue._id || issue.id)} className="btn btn-ghost btn-xs" style={{ color: '#ef4444' }} title="Delete Permanent">
+                                 <Trash2 size={14} />
+                               </button>
+                             </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style>{`
+        .table-row-hover:hover {
+          background: rgba(255,255,255,0.04) !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .table-row-hover {
+          transition: all 0.2s ease;
+        }
+        .btn-xs {
+          padding: 6px;
+          min-width: unset;
+        }
+      `}</style>
+    </div>
+  );
+}
