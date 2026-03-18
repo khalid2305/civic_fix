@@ -10,6 +10,10 @@ import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 const statusColors = {
+  'pending': { bg: 'rgba(245,158,11,0.2)', color: '#fbbf24', border: 'rgba(245,158,11,0.4)' },
+  'in-progress': { bg: 'rgba(139,92,246,0.2)', color: '#a78bfa', border: 'rgba(139,92,246,0.4)' },
+  'resolved': { bg: 'rgba(16,185,129,0.2)', color: '#34d399', border: 'rgba(16,185,129,0.4)' },
+  'rejected': { bg: 'rgba(239,68,68,0.2)', color: '#ef4444', border: 'rgba(239,68,68,0.4)' },
   'Pending': { bg: 'rgba(245,158,11,0.2)', color: '#fbbf24', border: 'rgba(245,158,11,0.4)' },
   'Open': { bg: 'rgba(59,130,246,0.2)', color: '#60a5fa', border: 'rgba(59,130,246,0.4)' },
   'In Progress': { bg: 'rgba(139,92,246,0.2)', color: '#a78bfa', border: 'rgba(139,92,246,0.4)' },
@@ -62,7 +66,7 @@ export default function IssueDetails() {
   );
 
   const dept = issue.department;
-  const sc = statusColors[issue.status] || statusColors['Open'];
+  const sc = statusColors[issue.status] || statusColors['pending'];
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -97,7 +101,7 @@ export default function IssueDetails() {
                   padding: '5px 12px', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 700,
                   background: sc.bg, color: sc.color, border: `1px solid ${sc.border}`,
                 }}>
-                  ● {issue.status}
+                  ● {issue.status.charAt(0).toUpperCase() + issue.status.slice(1)}
                 </span>
                 <span className="badge badge-gray">{issue.category}</span>
               </div>
@@ -220,15 +224,23 @@ export default function IssueDetails() {
             {/* Status Timeline */}
             <div className="glass-card" style={{ padding: '24px' }}>
               <h3 style={{ fontWeight: 700, marginBottom: '16px' }}>Status Timeline</h3>
-              {['Pending', 'Open', 'In Progress', 'Resolved'].map((s, i) => {
-                const statuses = ['Pending', 'Open', 'In Progress', 'Resolved'];
-                const currentIdx = statuses.indexOf(issue.status);
+              {['Pending', 'In Progress', 'Resolved'].map((s, i) => {
+                const stepKeys = ['pending', 'in-progress', 'resolved'];
+                const legacyStepKeys = ['Pending', 'In Progress', 'Resolved'];
+                const issueStatusRaw = issue.status;
+                const normalizedStatus = issueStatusRaw.toLowerCase() === 'open' ? 'pending' : issueStatusRaw.toLowerCase();
+                
+                let currentIdx = stepKeys.indexOf(normalizedStatus);
+                if (currentIdx === -1) currentIdx = legacyStepKeys.indexOf(issueStatusRaw); // fallback for legacy mock tags
+                if (currentIdx === -1 && normalizedStatus === 'rejected') currentIdx = 0; // if rejected, only pending is done
+
                 const isDone = i <= currentIdx;
-                const isCurrent = issue.status === s;
-                const col = statusColors[s];
+                const isCurrent = currentIdx === i || (normalizedStatus === 'rejected' && i === 0);
+                const col = statusColors[stepKeys[i]];
+                
                 return (
-                  <div key={s} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: i < 3 ? '0' : '0', paddingBottom: i < 3 ? '16px' : '0', position: 'relative' }}>
-                    {i < 3 && (
+                  <div key={s} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: i < 2 ? '0' : '0', paddingBottom: i < 2 ? '16px' : '0', position: 'relative' }}>
+                    {i < 2 && (
                       <div style={{ position: 'absolute', left: '10px', top: '22px', width: '2px', height: '24px', background: isDone ? (col?.color || '#3b82f6') : 'var(--border-glass)' }} />
                     )}
                     <div style={{
@@ -241,7 +253,9 @@ export default function IssueDetails() {
                       {isDone && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'white' }} />}
                     </div>
                     <div style={{ paddingTop: '2px' }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: isCurrent ? 800 : 500, color: isCurrent ? col?.color : (isDone ? 'var(--text-secondary)' : 'var(--text-muted)') }}>{s}</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: isCurrent ? 800 : 500, color: isCurrent ? col?.color : (isDone ? 'var(--text-secondary)' : 'var(--text-muted)') }}>
+                        {s} {isCurrent && normalizedStatus === 'rejected' && <span style={{color: '#ef4444'}}>(Rejected)</span>}
+                      </div>
                     </div>
                   </div>
                 );

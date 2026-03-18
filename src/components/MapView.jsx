@@ -39,7 +39,7 @@ export default function MapView({ lat, lng, issues = [], onLocationChange, dragg
     }
   }, [lat, lng, issues]);
 
-  const updateMarkers = () => {
+  function updateMarkers() {
     const L = window.L;
     if (!L || !mapInstanceRef.current) return;
 
@@ -94,7 +94,7 @@ export default function MapView({ lat, lng, issues = [], onLocationChange, dragg
     }
   };
 
-  const initMap = () => {
+  function initMap() {
     const L = window.L;
     if (!L || mapInstanceRef.current) return;
 

@@ -47,8 +47,8 @@ export default function ViewIssues() {
   let issues = [...allIssues];
   if (search.trim()) {
     issues = issues.filter(i =>
-      i.title.toLowerCase().includes(search.toLowerCase()) ||
-      i.description.toLowerCase().includes(search.toLowerCase())
+      (i.title?.toLowerCase() || '').includes(search.toLowerCase()) ||
+      (i.description?.toLowerCase() || '').includes(search.toLowerCase())
     );
   }
   const totalPages = Math.ceil(issues.length / PER_PAGE);

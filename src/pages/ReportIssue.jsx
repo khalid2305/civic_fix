@@ -141,7 +141,7 @@ export default function ReportIssue() {
           <p className="section-subtitle">{t('report_subtitle')}</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: '28px', alignItems: 'start' }}>
+        <div className="report-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: '28px', alignItems: 'start' }}>
           {/* Form */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* Title */}

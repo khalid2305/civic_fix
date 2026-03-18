@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const IssueContext = createContext();
 
@@ -13,11 +14,6 @@ export function IssueProvider({ children }) {
     if (url.startsWith('http') || url.startsWith('data:')) return url;
     return `http://localhost:5000/uploads/${url}`;
   };
-
-  useEffect(() => {
-    fetchIssues();
-    fetchDepartments();
-  }, []);
 
   const fetchDepartments = async () => {
     try {
@@ -39,6 +35,11 @@ export function IssueProvider({ children }) {
       }))); // Normalize ID and Image
     }
   };
+
+  useEffect(() => {
+    fetchIssues();
+    fetchDepartments();
+  }, []);
 
   const supportIssue = async (issueId) => {
     const token = localStorage.getItem('civicfix_token');

@@ -4,6 +4,10 @@ import { ThumbsUp, MessageSquare, MapPin, Calendar } from 'lucide-react';
 import { getDepartmentById } from '../data/mockData';
 
 const statusColors = {
+  'pending': 'badge-amber',
+  'in-progress': 'badge-purple',
+  'resolved': 'badge-green',
+  'rejected': 'badge-red',
   'Pending': 'badge-amber',
   'Open': 'badge-blue',
   'In Progress': 'badge-purple',
@@ -41,7 +45,7 @@ export default function IssueCard({ issue }) {
         {/* Status Badge */}
         <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
           <span className={`badge ${statusColors[issue.status] || 'badge-gray'}`}>
-            {t(`status_${issue.status.toLowerCase().replace(' ', '_')}`) || issue.status}
+            {t(`status_${issue.status.toLowerCase().replace(/[- ]/g, '_')}`) || (issue.status.charAt(0).toUpperCase() + issue.status.slice(1))}
           </span>
         </div>
         {/* Category */}
