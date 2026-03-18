@@ -4,9 +4,9 @@ import toast from 'react-hot-toast';
 import { Mail, Phone, MapPin, Send, Users, Target, Award, Heart } from 'lucide-react';
 
 const team = [
-  { name: 'Priya Sharma', role: 'Lead Developer', avatar: 'PS', color: '#3b82f6' },
-  { name: 'Arjun Kumar', role: 'UX Designer', avatar: 'AK', color: '#8b5cf6' },
-  { name: 'Ravi Selvam', role: 'Backend Engineer', avatar: 'RS', color: '#10b981' },
+  { name: 'Priya Sharma', role: 'Lead Developer', avatar: 'PS', color: 'var(--text-primary)' },
+  { name: 'Arjun Kumar', role: 'UX Designer', avatar: 'AK', color: 'var(--text-secondary)' },
+  { name: 'Ravi Selvam', role: 'Backend Engineer', avatar: 'RS', color: 'var(--text-muted)' },
 ];
 
 export default function About() {
@@ -30,7 +30,7 @@ export default function About() {
       {/* Hero */}
       <section style={{
         padding: '80px 0',
-        background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(139,92,246,0.1) 100%)',
+        background: 'var(--bg-glass)',
         borderBottom: '1px solid var(--border-glass)',
       }}>
         <div className="container" style={{ textAlign: 'center' }}>
@@ -47,7 +47,7 @@ export default function About() {
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '5px 14px', borderRadius: '99px', background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', fontSize: '0.78rem', fontWeight: 700, color: '#60a5fa', marginBottom: '16px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '5px 14px', borderRadius: '99px', background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px' }}>
                 <Target size={12} /> Our Mission
               </div>
               <h2 className="section-title">{t('mission_title')}</h2>
@@ -60,10 +60,10 @@ export default function About() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {[
-                { icon: <Users size={20} />, title: 'Citizen-First', desc: 'Built for everyday citizens to make their voices heard', color: '#3b82f6' },
-                { icon: <Target size={20} />, title: 'Transparent', desc: 'Every issue is tracked publicly with real-time status updates', color: '#8b5cf6' },
-                { icon: <Award size={20} />, title: 'Accountable', desc: 'Departments are held responsible for timely resolutions', color: '#10b981' },
-                { icon: <Heart size={20} />, title: 'Community-Driven', desc: 'Issues supported by more citizens get prioritized faster', color: '#f59e0b' },
+                { icon: <Users size={20} />, title: 'Citizen-First', desc: 'Built for everyday citizens to make their voices heard', color: 'var(--text-primary)' },
+                { icon: <Target size={20} />, title: 'Transparent', desc: 'Every issue is tracked publicly with real-time status updates', color: 'var(--text-primary)' },
+                { icon: <Award size={20} />, title: 'Accountable', desc: 'Departments are held responsible for timely resolutions', color: 'var(--text-primary)' },
+                { icon: <Heart size={20} />, title: 'Community-Driven', desc: 'Issues supported by more citizens get prioritized faster', color: 'var(--text-primary)' },
               ].map((v, i) => (
                 <div key={i} className="glass-card" style={{ padding: '16px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: `${v.color}20`, border: `1px solid ${v.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: v.color, flexShrink: 0 }}>
@@ -91,10 +91,10 @@ export default function About() {
               <div key={i} className="glass-card" style={{ padding: '28px', textAlign: 'center', minWidth: '200px', flex: '1', maxWidth: '240px' }}>
                 <div style={{
                   width: '64px', height: '64px', borderRadius: '50%', margin: '0 auto 14px',
-                  background: `linear-gradient(135deg, ${m.color}, ${m.color}80)`,
+                  background: 'var(--text-primary)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '1.2rem', fontWeight: 900, color: 'white',
-                  boxShadow: `0 8px 20px ${m.color}40`,
+                  fontSize: '1.2rem', fontWeight: 900, color: 'var(--bg-primary)',
+                  boxShadow: 'var(--shadow-md)',
                 }}>
                   {m.avatar}
                 </div>
@@ -117,9 +117,9 @@ export default function About() {
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {[
-                  { icon: <Mail size={18} />, label: 'Email', value: 'hello@civicfix.in', color: '#3b82f6' },
-                  { icon: <Phone size={18} />, label: 'Phone', value: '+91 98765 43210', color: '#10b981' },
-                  { icon: <MapPin size={18} />, label: 'Office', value: 'Chennai, Tamil Nadu 600001', color: '#8b5cf6' },
+                  { icon: <Mail size={18} />, label: 'Email', value: 'hello@civicfix.in', color: 'var(--text-primary)' },
+                  { icon: <Phone size={18} />, label: 'Phone', value: '+91 98765 43210', color: 'var(--text-primary)' },
+                  { icon: <MapPin size={18} />, label: 'Office', value: 'Chennai, Tamil Nadu 600001', color: 'var(--text-primary)' },
                 ].map((c, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: `${c.color}20`, border: `1px solid ${c.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: c.color, flexShrink: 0 }}>

@@ -16,17 +16,17 @@ import toast from 'react-hot-toast';
 
 const STATUS_OPTIONS = ['pending', 'in-progress', 'resolved', 'rejected'];
 const statusStyles = {
-  'pending': { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', shadow: 'rgba(245,158,11,0.2)' },
-  'in-progress': { color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', shadow: 'rgba(139,92,246,0.2)' },
-  'resolved': { color: '#10b981', bg: 'rgba(16,185,129,0.1)', shadow: 'rgba(16,185,129,0.2)' },
-  'rejected': { color: '#ef4444', bg: 'rgba(239,68,68,0.1)', shadow: 'rgba(239,68,68,0.2)' },
-  'Pending': { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', shadow: 'rgba(245,158,11,0.2)' },
-  'In Progress': { color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', shadow: 'rgba(139,92,246,0.2)' },
-  'Resolved': { color: '#10b981', bg: 'rgba(16,185,129,0.1)', shadow: 'rgba(16,185,129,0.2)' },
-  'Open': { color: '#3b82f6', bg: 'rgba(59,130,246,0.1)', shadow: 'rgba(59,130,246,0.2)' }
+  'pending': { color: 'var(--color-warning)', bg: 'var(--bg-glass)', shadow: 'rgba(0,0,0,0.1)' },
+  'in-progress': { color: 'var(--color-accent)', bg: 'var(--bg-glass)', shadow: 'rgba(0,0,0,0.1)' },
+  'resolved': { color: 'var(--text-primary)', bg: 'var(--bg-glass)', shadow: 'rgba(0,0,0,0.1)' },
+  'rejected': { color: 'var(--color-danger)', bg: 'var(--bg-glass)', shadow: 'rgba(0,0,0,0.1)' },
+  'Pending': { color: 'var(--color-warning)', bg: 'var(--bg-glass)', shadow: 'rgba(0,0,0,0.1)' },
+  'In Progress': { color: 'var(--color-accent)', bg: 'var(--bg-glass)', shadow: 'rgba(0,0,0,0.1)' },
+  'Resolved': { color: 'var(--text-primary)', bg: 'var(--bg-glass)', shadow: 'rgba(0,0,0,0.1)' },
+  'Open': { color: 'var(--text-primary)', bg: 'var(--bg-glass)', shadow: 'rgba(0,0,0,0.1)' }
 };
 
-const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#64748b'];
+const PIE_COLORS = ['var(--text-primary)', 'var(--text-muted)', 'var(--color-accent)', 'var(--color-primary-dark)', 'var(--color-primary-light)'];
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -160,10 +160,10 @@ export default function AdminDashboard() {
         {/* Top Stats Orbs */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '40px' }}>
           {[
-            { label: 'Total Complaints', value: stats.total, icon: <Inbox size={20} />, color: '#3b82f6' },
-            { label: 'Action Required (Other)', value: stats.triage, icon: <AlertCircle size={20} />, color: '#ef4444', highlight: stats.triage > 0 },
-            { label: 'Pending Review', value: stats.pending, icon: <Clock size={20} />, color: '#f59e0b' },
-            { label: 'Resolved Tickets', value: stats.completed, icon: <CheckCircle size={20} />, color: '#10b981' },
+            { label: 'Total Complaints', value: stats.total, icon: <Inbox size={20} />, color: 'var(--text-primary)' },
+            { label: 'Action Required (Other)', value: stats.triage, icon: <AlertCircle size={20} />, color: 'var(--color-danger)', highlight: stats.triage > 0 },
+            { label: 'Pending Review', value: stats.pending, icon: <Clock size={20} />, color: 'var(--color-warning)' },
+            { label: 'Resolved Tickets', value: stats.completed, icon: <CheckCircle size={20} />, color: 'var(--text-primary)' },
           ].map((s, i) => (
             <div key={i} className="glass-card" style={{ 
               padding: '24px', 
@@ -249,8 +249,8 @@ export default function AdminDashboard() {
                         <XAxis dataKey="name" tick={{ fill: '#64748b' }} />
                         <YAxis tick={{ fill: '#64748b' }} />
                         <Tooltip contentStyle={{ background: '#111827', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
-                        <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="resolved" fill="#10b981" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="total" fill="var(--text-primary)" radius={[4, 4, 0, 0]} opacity={0.8} />
+                        <Bar dataKey="resolved" fill="var(--text-primary)" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>

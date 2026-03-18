@@ -5,9 +5,9 @@ import { MessageSquare, Star, ArrowLeft, RefreshCw, Download, Search, Filter, Ch
 import toast from 'react-hot-toast';
 
 const STATUS_COLORS = {
-  pending: { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-  reviewed: { color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
-  resolved: { color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+  pending: { color: 'var(--color-warning)', bg: 'var(--bg-glass)' },
+  reviewed: { color: 'var(--color-accent)', bg: 'var(--bg-glass)' },
+  resolved: { color: 'var(--text-primary)', bg: 'var(--bg-glass)' },
 };
 
 function StarDisplay({ rating }) {
@@ -17,8 +17,8 @@ function StarDisplay({ rating }) {
         <Star
           key={i}
           size={16}
-          color={i < rating ? '#f59e0b' : '#374151'}
-          fill={i < rating ? '#f59e0b' : 'transparent'}
+          color={i < rating ? 'var(--text-primary)' : 'var(--text-muted)'}
+          fill={i < rating ? 'var(--text-primary)' : 'transparent'}
         />
       ))}
       <span style={{ marginLeft: '6px', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
@@ -96,10 +96,10 @@ export default function AdminFeedback() {
     : 0;
 
   const statCards = [
-    { label: 'Total Submissions', value: feedback.length, color: '#3b82f6', icon: <MessageSquare size={20} /> },
-    { label: 'Avg Rating', value: `${avgRating} ⭐`, color: '#f59e0b', icon: <Star size={20} /> },
-    { label: 'Pending Review', value: feedback.filter(f => f.status === 'pending').length, color: '#ef4444', icon: <Clock size={20} /> },
-    { label: 'Resolved', value: feedback.filter(f => f.status === 'resolved').length, color: '#10b981', icon: <CheckCircle size={20} /> },
+    { label: 'Total Submissions', value: feedback.length, color: 'var(--text-primary)', icon: <MessageSquare size={20} /> },
+    { label: 'Avg Rating', value: `${avgRating} ⭐`, color: 'var(--text-primary)', icon: <Star size={20} /> },
+    { label: 'Pending Review', value: feedback.filter(f => f.status === 'pending').length, color: 'var(--color-danger)', icon: <Clock size={20} /> },
+    { label: 'Resolved', value: feedback.filter(f => f.status === 'resolved').length, color: 'var(--text-primary)', icon: <CheckCircle size={20} /> },
   ];
 
   return (
@@ -116,8 +116,8 @@ export default function AdminFeedback() {
               <ArrowLeft size={14} /> Back to Dashboard
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <div style={{ padding: '10px', borderRadius: '12px', background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', boxShadow: '0 8px 20px rgba(139,92,246,0.3)' }}>
-                <MessageSquare size={22} color="white" />
+              <div style={{ padding: '10px', borderRadius: '12px', background: 'var(--text-primary)', boxShadow: 'var(--shadow-md)' }}>
+                <MessageSquare size={22} color="var(--bg-primary)" />
               </div>
               <h1 style={{ fontSize: '2rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em' }}>
                 Citizen Feedback
@@ -206,9 +206,9 @@ export default function AdminFeedback() {
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                       <div style={{
                         width: '44px', height: '44px', borderRadius: '12px',
-                        background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                        background: 'var(--text-primary)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.1rem', fontWeight: 800, color: 'white', flexShrink: 0
+                        fontSize: '1.1rem', fontWeight: 800, color: 'var(--bg-primary)', flexShrink: 0
                       }}>
                         {(fb.userId?.name || 'A')[0].toUpperCase()}
                       </div>

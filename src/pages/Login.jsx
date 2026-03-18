@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { Mail, Lock, Smartphone, Chrome, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Smartphone, Chrome, Eye, EyeOff, MapPin } from 'lucide-react';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -72,22 +72,22 @@ export default function Login() {
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '90px 24px 40px',
-      background: 'linear-gradient(135deg, #070b14 0%, #0b1628 100%)',
+      background: 'var(--bg-primary)',
     }}>
       {/* Background blobs */}
-      <div style={{ position: 'fixed', top: '15%', right: '10%', width: '350px', height: '350px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
-      <div style={{ position: 'fixed', bottom: '15%', left: '10%', width: '280px', height: '280px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', top: '15%', right: '10%', width: '350px', height: '350px', borderRadius: '50%', background: 'var(--bg-glass)', filter: 'blur(80px)', pointerEvents: 'none', opacity: 0.5 }} />
+      <div style={{ position: 'fixed', bottom: '15%', left: '10%', width: '280px', height: '280px', borderRadius: '50%', background: 'var(--bg-glass)', filter: 'blur(80px)', pointerEvents: 'none', opacity: 0.5 }} />
 
       <div style={{ width: '100%', maxWidth: '440px', animation: 'fadeInUp 0.5s ease' }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{
             width: '52px', height: '52px', borderRadius: '14px', margin: '0 auto 16px',
-            background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)',
+            background: 'var(--text-primary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 8px 25px rgba(59,130,246,0.4)',
+            boxShadow: 'var(--shadow-md)',
           }}>
-            <span style={{ fontSize: '1.4rem' }}>📍</span>
+            <MapPin size={24} color="var(--bg-primary)" />
           </div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '6px' }}>{t('login_title')}</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{t('login_subtitle')}</p>

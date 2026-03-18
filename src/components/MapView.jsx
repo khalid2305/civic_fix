@@ -48,10 +48,10 @@ export default function MapView({ lat, lng, issues = [], onLocationChange, dragg
     markersRef.current = [];
 
     const blueIcon = L.divIcon({
-      html: `<div style="width:32px;height:32px;border-radius:50% 50% 50% 0;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border:3px solid white;box-shadow:0 4px 15px rgba(59,130,246,0.5);transform:rotate(-45deg);margin-top:-16px;margin-left:-16px;"></div>`,
+      html: `<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;background:var(--text-primary);border:2px solid var(--bg-primary);box-shadow:0 4px 10px rgba(0,0,0,0.3);transform:rotate(-45deg);margin-top:-14px;margin-left:-14px;"></div>`,
       className: '',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
+      iconSize: [28, 28],
+      iconAnchor: [14, 28],
     });
 
     if (issues.length) {

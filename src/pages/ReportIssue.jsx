@@ -213,8 +213,8 @@ export default function ReportIssue() {
                   {showSuggestions && suggestions.length > 0 && (
                     <div style={{
                       position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 1000,
-                      background: '#111827', border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '10px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+                      background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)',
+                      borderRadius: '10px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)',
                       marginTop: '4px',
                     }}>
                       {suggestions.map((s, i) => (
@@ -228,10 +228,10 @@ export default function ReportIssue() {
                             borderBottom: i < suggestions.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
                             transition: 'background 0.15s',
                           }}
-                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(59,130,246,0.1)'}
+                          onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-glass-hover)'}
                           onMouseLeave={e => e.currentTarget.style.background = 'none'}
                         >
-                          <MapPin size={12} style={{ flexShrink: 0, marginTop: '2px', color: '#3b82f6' }} />
+                           <MapPin size={12} style={{ flexShrink: 0, marginTop: '2px', color: 'var(--text-primary)' }} />
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.display_name}</span>
                         </button>
                       ))}
@@ -250,8 +250,8 @@ export default function ReportIssue() {
                 <Navigation size={15} />
                 {gettingLoc ? t('getting_location') : form.location ? t('location_set') : t('get_location')}
               </button>
-              {form.location && (
-                <div style={{ marginBottom: '12px', padding: '8px 12px', borderRadius: 'var(--radius-sm)', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', fontSize: '0.82rem', color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
+               {form.location && (
+                <div style={{ marginBottom: '12px', padding: '8px 12px', borderRadius: 'var(--radius-sm)', background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <MapPin size={12} /> {form.location.address} ({form.location.lat.toFixed(4)}, {form.location.lng.toFixed(4)})
                 </div>
               )}
@@ -289,10 +289,10 @@ export default function ReportIssue() {
                 </div>
               ))}
             </div>
-            <div style={{
+             <div style={{
               padding: '20px', borderRadius: 'var(--radius-lg)',
-              background: 'linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.15))',
-              border: '1px solid rgba(59,130,246,0.25)',
+              background: 'var(--bg-glass)',
+              border: '1px solid var(--border-glass)',
             }}>
               <div style={{ fontSize: '1.5rem', marginBottom: '8px' }}>🔔</div>
               <div style={{ fontWeight: 700, marginBottom: '6px' }}>Get Updates</div>

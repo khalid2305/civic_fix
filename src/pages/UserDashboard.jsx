@@ -8,10 +8,10 @@ import { TrendingUp, MessageSquare, ThumbsUp, Plus, Star, Clock, CheckCircle, XC
 import FeedbackModal from '../components/FeedbackModal';
 
 const STATUS_CONFIG = {
-  'pending':     { color: '#f59e0b', icon: <Clock size={12} />, label: 'Pending' },
-  'in-progress': { color: '#8b5cf6', icon: <TrendingUp size={12} />, label: 'In Progress' },
-  'resolved':    { color: '#10b981', icon: <CheckCircle size={12} />, label: 'Resolved' },
-  'rejected':    { color: '#ef4444', icon: <XCircle size={12} />, label: 'Rejected' },
+  'pending':     { color: 'var(--color-warning)', icon: <Clock size={12} />, label: 'Pending' },
+  'in-progress': { color: 'var(--color-accent)', icon: <TrendingUp size={12} />, label: 'In Progress' },
+  'resolved':    { color: 'var(--text-primary)', icon: <CheckCircle size={12} />, label: 'Resolved' },
+  'rejected':    { color: 'var(--color-danger)', icon: <XCircle size={12} />, label: 'Rejected' },
 };
 
 export default function UserDashboard() {
@@ -81,10 +81,10 @@ export default function UserDashboard() {
         {/* Stats Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
           {[
-            { icon: <TrendingUp size={22} />, label: 'Issues Reported', value: myIssues.length, color: '#3b82f6' },
-            { icon: <CheckCircle size={22} />, label: 'Resolved', value: resolvedCount, color: '#10b981' },
-            { icon: <ThumbsUp size={22} />, label: 'Issues Supported', value: supportedCount, color: '#8b5cf6' },
-            { icon: <MessageSquare size={22} />, label: 'Comments Made', value: commentsMadeCount, color: '#f59e0b' },
+            { icon: <TrendingUp size={22} />, label: 'Issues Reported', value: myIssues.length, color: 'var(--text-primary)' },
+            { icon: <CheckCircle size={22} />, label: 'Resolved', value: resolvedCount, color: 'var(--text-primary)' },
+            { icon: <ThumbsUp size={22} />, label: 'Issues Supported', value: supportedCount, color: 'var(--text-primary)' },
+            { icon: <MessageSquare size={22} />, label: 'Comments Made', value: commentsMadeCount, color: 'var(--text-primary)' },
           ].map((s, i) => (
             <div key={i} className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', animation: `fadeInUp 0.4s ease ${i * 0.08}s both` }}>
               <div style={{
@@ -216,13 +216,13 @@ export default function UserDashboard() {
                   <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis hide allowDecimals={false} />
                   <Tooltip contentStyle={{ background: '#1a2744', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#f0f4ff', fontSize: '12px' }} />
-                  <Line type="monotone" dataKey="issues" stroke="#3b82f6" strokeWidth={2} dot={{ fill: '#3b82f6', strokeWidth: 0, r: 3 }} name="Reported" />
-                  <Line type="monotone" dataKey="resolved" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', strokeWidth: 0, r: 3 }} name="Resolved" />
+                  <Line type="monotone" dataKey="issues" stroke="var(--text-primary)" strokeWidth={2} dot={{ fill: 'var(--text-primary)', strokeWidth: 0, r: 3 }} name="Reported" />
+                  <Line type="monotone" dataKey="resolved" stroke="var(--text-secondary)" strokeWidth={2} dot={{ fill: 'var(--text-secondary)', strokeWidth: 0, r: 3 }} name="Resolved" />
                 </LineChart>
               </ResponsiveContainer>
               <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#3b82f6', fontWeight: 700 }}>● Reported</span>
-                <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700 }}>● Resolved</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-primary)', fontWeight: 700 }}>● Reported</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 700 }}>● Resolved</span>
               </div>
             </div>
           </div>

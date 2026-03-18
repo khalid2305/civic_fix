@@ -1,17 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ThumbsUp, MessageSquare, MapPin, Calendar } from 'lucide-react';
+import { ThumbsUp, MessageSquare, MapPin, Calendar, Clock, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
 import { getDepartmentById } from '../data/mockData';
 
-const statusColors = {
-  'pending': 'badge-amber',
-  'in-progress': 'badge-purple',
-  'resolved': 'badge-green',
-  'rejected': 'badge-red',
-  'Pending': 'badge-amber',
-  'Open': 'badge-blue',
-  'In Progress': 'badge-purple',
-  'Resolved': 'badge-green',
+const STATUS_CONFIG = {
+  'pending':     { color: 'var(--color-warning)', icon: <Clock size={12} />, label: 'Pending' },
+  'in-progress': { color: 'var(--color-accent)', icon: <TrendingUp size={12} />, label: 'In Progress' },
+  'resolved':    { color: 'var(--text-primary)', icon: <CheckCircle size={12} />, label: 'Resolved' },
+  'rejected':    { color: 'var(--color-danger)', icon: <XCircle size={12} />, label: 'Rejected' },
 };
 
 export default function IssueCard({ issue }) {
@@ -21,6 +17,9 @@ export default function IssueCard({ issue }) {
   const formatDate = (iso) => new Date(iso).toLocaleDateString('en-IN', {
     day: 'numeric', month: 'short', year: 'numeric'
   });
+
+  const currentStatusKey = (issue.status || 'pending').toLowerCase();
+  const statusInfo = STATUS_CONFIG[currentStatusKey] || { color: 'var(--text-muted)', icon: null, label: t('status_unknown') || 'Unknown' };
 
   return (
     <div className="glass-card issue-card" style={{ overflow: 'hidden' }}>
@@ -44,8 +43,15 @@ export default function IssueCard({ issue }) {
         }} />
         {/* Status Badge */}
         <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
-          <span className={`badge ${statusColors[issue.status] || 'badge-gray'}`}>
-            {t(`status_${issue.status.toLowerCase().replace(/[- ]/g, '_')}`) || (issue.status.charAt(0).toUpperCase() + issue.status.slice(1))}
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            padding: '3px 10px', borderRadius: '99px',
+            background: `${statusInfo.color}20`, border: `1px solid ${statusInfo.color}40`,
+            fontSize: '0.72rem', fontWeight: 700, color: statusInfo.color,
+            textTransform: 'uppercase', letterSpacing: '0.04em',
+          }}>
+            {statusInfo.icon && <span style={{ display: 'flex', alignItems: 'center' }}>{statusInfo.icon}</span>}
+            {statusInfo.label}
           </span>
         </div>
         {/* Category */}

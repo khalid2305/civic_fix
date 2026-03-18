@@ -45,11 +45,11 @@ export default function CommentSection({ issue }) {
       }}>
         <div style={{
           width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0,
-          background: user ? 'linear-gradient(135deg,#3b82f6,#8b5cf6)' : 'var(--bg-glass)',
+          background: user ? 'var(--text-primary)' : 'var(--bg-glass)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 700, fontSize: '0.8rem', color: 'white',
+          fontWeight: 700, fontSize: '0.8rem', color: 'var(--bg-primary)',
         }}>
-          {user?.avatar || '?'}
+          {(user?.name?.[0] || '?').toUpperCase()}
         </div>
         <div style={{ flex: 1, display: 'flex', gap: '10px' }}>
           <textarea

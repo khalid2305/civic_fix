@@ -32,19 +32,19 @@ export default function Register() {
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '90px 24px 40px',
-      background: 'linear-gradient(135deg,#070b14 0%,#0b1628 100%)',
+      background: 'var(--bg-primary)',
     }}>
-      <div style={{ position: 'fixed', top: '10%', left: '5%', width: '350px', height: '350px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', top: '10%', left: '5%', width: '350px', height: '350px', borderRadius: '50%', background: 'var(--bg-glass)', filter: 'blur(80px)', pointerEvents: 'none', opacity: 0.5 }} />
 
       <div style={{ width: '100%', maxWidth: '460px', animation: 'fadeInUp 0.5s ease' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{
             width: '52px', height: '52px', borderRadius: '14px', margin: '0 auto 16px',
-            background: 'linear-gradient(135deg,#10b981,#3b82f6)',
+            background: 'var(--text-primary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 8px 25px rgba(16,185,129,0.4)',
+            boxShadow: 'var(--shadow-md)',
           }}>
-            <User size={24} color="white" />
+            <User size={24} color="var(--bg-primary)" />
           </div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '6px' }}>{t('register_title')}</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{t('register_subtitle')}</p>

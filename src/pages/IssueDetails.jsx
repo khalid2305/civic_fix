@@ -35,13 +35,29 @@ export default function IssueDetails() {
   const issue = issues.find(i => i.id === id || i._id === id);
   const [loading, setLoading] = useState(!issue);
   const [error, setError] = useState(null);
+  const [geoAddress, setGeoAddress] = useState(issue?.address || '');
+
+  useEffect(() => {
+    if (issue?.address) setGeoAddress(issue.address);
+  }, [issue?.address]);
 
   useEffect(() => {
     const loadData = async () => {
       if (!issue) setLoading(true);
       try {
-        await fetchIssueById(id);
+        const fetchedIssue = await fetchIssueById(id);
         await fetchComments(id);
+        
+        // Reverse geocode if address is missing
+        if (fetchedIssue && !fetchedIssue.address && fetchedIssue.latitude) {
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${fetchedIssue.latitude}&lon=${fetchedIssue.longitude}`);
+            const geoData = await res.json();
+            if (geoData && geoData.display_name) {
+               setGeoAddress(geoData.display_name);
+            }
+          } catch (geoErr) { /* ignore geocode failure */ }
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -125,7 +141,7 @@ export default function IssueDetails() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem', maxWidth: '360px' }}>
                   <MapPin size={14} color="var(--color-primary-light)" style={{ flexShrink: 0 }} />
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {issue.address || `${issue.latitude?.toFixed(4)}, ${issue.longitude?.toFixed(4)}`}
+                    {geoAddress || `${issue.latitude?.toFixed(4)}, ${issue.longitude?.toFixed(4)}`}
                   </span>
                 </div>
               </div>
@@ -182,8 +198,8 @@ export default function IssueDetails() {
               <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '10px', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
                 <MapPin size={12} style={{ flexShrink: 0, marginTop: '1px', color: '#3b82f6' }} />
                 <span>
-                  {issue.address
-                    ? issue.address.length > 120 ? issue.address.slice(0, 120) + '...' : issue.address
+                  {geoAddress
+                    ? geoAddress.length > 120 ? geoAddress.slice(0, 120) + '...' : geoAddress
                     : `${issue.latitude?.toFixed(4)}, ${issue.longitude?.toFixed(4)}`
                   }
                 </span>

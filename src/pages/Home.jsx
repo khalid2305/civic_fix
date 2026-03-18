@@ -44,21 +44,23 @@ export default function Home() {
       <section style={{
         minHeight: '100vh', display: 'flex', alignItems: 'center',
         position: 'relative', overflow: 'hidden',
-        background: 'linear-gradient(135deg, #070b14 0%, #0b1628 50%, #070b14 100%)',
+        background: 'var(--bg-primary)',
         paddingTop: '80px',
       }}>
         {/* Animated gradient blobs */}
         <div style={{
           position: 'absolute', top: '10%', right: '5%',
           width: '500px', height: '500px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)',
-          filter: 'blur(40px)', animation: 'float 6s ease-in-out infinite',
+          background: 'var(--bg-glass)',
+          filter: 'blur(80px)', animation: 'float 6s ease-in-out infinite',
+          opacity: 0.3,
         }} />
         <div style={{
           position: 'absolute', bottom: '10%', left: '5%',
           width: '400px', height: '400px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)',
-          filter: 'blur(40px)', animation: 'float 8s ease-in-out infinite reverse',
+          background: 'var(--bg-glass)',
+          filter: 'blur(80px)', animation: 'float 8s ease-in-out infinite reverse',
+          opacity: 0.3,
         }} />
 
         <div className="container" style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '60px 24px' }}>
@@ -66,12 +68,12 @@ export default function Home() {
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             padding: '6px 16px', borderRadius: '99px',
-            background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)',
-            fontSize: '0.82rem', fontWeight: 700, color: '#60a5fa',
+            background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
+            fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)',
             marginBottom: '28px',
             animation: 'fadeInUp 0.5s ease',
           }}>
-            <Zap size={13} fill="#60a5fa" /> Smart Civic Complaint System
+            <Zap size={13} fill="var(--text-primary)" /> Smart Civic Complaint System
           </div>
 
           <h1 style={{
@@ -81,8 +83,9 @@ export default function Home() {
           }}>
             {t('hero_title')}<br />
             <span style={{
-              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #10b981 100%)',
+              background: 'var(--text-primary)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+              opacity: 0.8,
             }}>
               {t('hero_title2')}
             </span>
@@ -112,10 +115,10 @@ export default function Home() {
             animation: 'fadeInUp 0.6s ease 0.4s both',
           }}>
             {[
-              { icon: <TrendingUp size={20} />, num: issues.length, label: t('stats_issues'), color: '#3b82f6' },
-              { icon: <CheckCircle size={20} />, num: issues.filter(i => ['Resolved', 'resolved'].includes(i.status)).length, label: t('stats_resolved'), color: '#10b981' },
-              { icon: <Users size={20} />, num: 5420, label: t('stats_citizens'), color: '#8b5cf6' },
-              { icon: <Building2 size={20} />, num: 6, label: t('stats_depts'), color: '#f59e0b' },
+              { icon: <TrendingUp size={20} />, num: issues.length, label: t('stats_issues'), color: 'var(--text-primary)' },
+              { icon: <CheckCircle size={20} />, num: issues.filter(i => ['Resolved', 'resolved'].includes(i.status)).length, label: t('stats_resolved'), color: 'var(--text-primary)' },
+              { icon: <Users size={20} />, num: 5420, label: t('stats_citizens'), color: 'var(--text-primary)' },
+              { icon: <Building2 size={20} />, num: 6, label: t('stats_depts'), color: 'var(--text-primary)' },
             ].map((s, i) => (
               <div key={i} className="glass-card" style={{ padding: '20px 16px', textAlign: 'center' }}>
                 <div style={{ color: s.color, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>{s.icon}</div>
@@ -139,8 +142,8 @@ export default function Home() {
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '5px 14px', borderRadius: '99px',
-              background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
-              fontSize: '0.78rem', fontWeight: 700, color: '#f87171', marginBottom: '16px',
+              background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
+              fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px',
             }}>
               🔥 {t('trending_title')}
             </div>
@@ -190,9 +193,9 @@ export default function Home() {
           </div>
           <div className="grid-3">
             {[
-              { step: '01', icon: '📸', title: t('step1_title'), desc: t('step1_desc'), color: '#3b82f6' },
-              { step: '02', icon: '📍', title: t('step2_title'), desc: t('step2_desc'), color: '#8b5cf6' },
-              { step: '03', icon: '✅', title: t('step3_title'), desc: t('step3_desc'), color: '#10b981' },
+              { step: '01', icon: '📸', title: t('step1_title'), desc: t('step1_desc'), color: 'var(--text-primary)' },
+              { step: '02', icon: '📍', title: t('step2_title'), desc: t('step2_desc'), color: 'var(--text-primary)' },
+              { step: '03', icon: '✅', title: t('step3_title'), desc: t('step3_desc'), color: 'var(--text-primary)' },
             ].map((s, i) => (
               <div key={i} className="glass-card" style={{ padding: '32px', textAlign: 'center' }}>
                 <div style={{
@@ -219,15 +222,15 @@ export default function Home() {
         <div className="container">
           <div style={{
             borderRadius: 'var(--radius-xl)', padding: '60px',
-            background: 'linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(139,92,246,0.2) 100%)',
-            border: '1px solid rgba(59,130,246,0.3)',
+            background: 'var(--bg-glass)',
+            border: '1px solid var(--border-glass)',
             textAlign: 'center', position: 'relative', overflow: 'hidden',
           }}>
             <div style={{
               position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px',
-              borderRadius: '50%', background: 'rgba(139,92,246,0.2)', filter: 'blur(40px)',
+              borderRadius: '50%', background: 'var(--bg-glass)', filter: 'blur(60px)',
             }} />
-            <ShieldCheck size={48} color="#60a5fa" style={{ margin: '0 auto 16px' }} />
+            <ShieldCheck size={48} color="var(--text-primary)" style={{ margin: '0 auto 16px' }} />
             <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '16px' }}>
               Be the Change Your City Needs
             </h2>

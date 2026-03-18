@@ -99,8 +99,8 @@ export default function FeedbackModal({ onClose }) {
                 >
                   <Star
                     size={36}
-                    fill={(hovered || rating) >= n ? '#f59e0b' : 'transparent'}
-                    color={(hovered || rating) >= n ? '#f59e0b' : '#374151'}
+                    fill={(hovered || rating) >= n ? 'var(--text-primary)' : 'transparent'}
+                    color={(hovered || rating) >= n ? 'var(--text-primary)' : 'var(--text-muted)'}
                     strokeWidth={1.5}
                   />
                 </button>

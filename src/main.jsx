@@ -5,31 +5,34 @@ import './index.css'
 import './i18n/index.js'
 import { AuthProvider } from './contexts/AuthContext.jsx'
 import { IssueProvider } from './contexts/IssueContext.jsx'
+import { ThemeProvider } from './contexts/ThemeContext.jsx'
 import { Toaster } from 'react-hot-toast'
 import { ErrorBoundary } from './ErrorBoundary.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider>
-      <IssueProvider>
-        <ErrorBoundary>
-          <App />
+    <ThemeProvider>
+      <AuthProvider>
+        <IssueProvider>
+          <ErrorBoundary>
+            <App />
           <Toaster
             position="top-right"
           toastOptions={{
             style: {
-              background: '#1a2744',
-              color: '#f0f4ff',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-glass)',
               borderRadius: '12px',
               fontSize: '0.875rem',
             },
-            success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+            success: { iconTheme: { primary: 'var(--text-primary)', secondary: 'var(--bg-primary)' } },
+            error: { iconTheme: { primary: 'var(--color-danger)', secondary: '#fff' } },
           }}
         />
         </ErrorBoundary>
-      </IssueProvider>
-    </AuthProvider>
+        </IssueProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </React.StrictMode>,
 )

@@ -2,14 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import {
   MapPin, Bell, User, LogOut, LayoutDashboard,
-  Shield, Menu, X, Globe, ChevronDown, AlertCircle, Plus
+  Shield, Menu, X, Globe, ChevronDown, AlertCircle, Plus, Sun, Moon
 } from 'lucide-react';
 
 export default function Navbar() {
   const { t, i18n } = useTranslation();
   const { user, logout, isAdmin } = useAuth();
+  const { isDark, toggle: toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -57,25 +59,25 @@ export default function Navbar() {
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-      background: scrolled ? 'rgba(7,11,20,0.95)' : 'rgba(7,11,20,0.6)',
+      background: scrolled ? 'var(--bg-card)' : 'transparent',
       backdropFilter: 'blur(20px)',
-      borderBottom: scrolled ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
+      borderBottom: '1px solid var(--border-glass)',
       transition: 'all 0.3s ease',
-      height: '70px',
+      height: scrolled ? '64px' : '74px',
     }}>
       <div className="container" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <div style={{
             width: '38px', height: '38px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+            background: 'var(--text-primary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 15px rgba(59,130,246,0.4)',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
           }}>
-            <MapPin size={20} color="white" />
+            <MapPin size={20} color="var(--bg-primary)" />
           </div>
-          <span style={{ fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-0.02em' }}>
-            Civic<span style={{ background: 'linear-gradient(90deg,#3b82f6,#8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Fix</span>
+          <span style={{ fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+            Civic<span>Fix</span>
           </span>
         </Link>
 
@@ -112,6 +114,11 @@ export default function Navbar() {
               <Plus size={14} /> {t('nav_report')}
             </Link>
           )}
+
+          {/* Theme Toggle */}
+          <button onClick={toggleTheme} className="theme-toggle" title="Toggle theme" style={{marginRight: '8px'}}>
+            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
 
           {/* Language Switcher */}
           <div style={{ position: 'relative' }}>
