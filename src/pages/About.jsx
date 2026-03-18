@@ -105,54 +105,29 @@ export default function About() {
           </div>
         </div>
       </section>
-
-      {/* Contact */}
+      {/* Contact Info ONLY */}
       <section style={{ padding: '80px 0' }}>
-        <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }}>
-            <div>
-              <h2 className="section-title">{t('contact_title')}</h2>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', lineHeight: 1.7 }}>
-                Have questions or feedback? We'd love to hear from you. Our team typically responds within 24 hours.
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {[
-                  { icon: <Mail size={18} />, label: 'Email', value: 'hello@civicfix.in', color: 'var(--text-primary)' },
-                  { icon: <Phone size={18} />, label: 'Phone', value: '+91 98765 43210', color: 'var(--text-primary)' },
-                  { icon: <MapPin size={18} />, label: 'Office', value: 'Chennai, Tamil Nadu 600001', color: 'var(--text-primary)' },
-                ].map((c, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: `${c.color}20`, border: `1px solid ${c.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: c.color, flexShrink: 0 }}>
-                      {c.icon}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{c.label}</div>
-                      <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{c.value}</div>
-                    </div>
-                  </div>
-                ))}
+        <div className="container" style={{ textAlign: 'center' }}>
+          <h2 className="section-title">{t('contact_title')}</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '40px', lineHeight: 1.7, maxWidth: '600px', margin: '0 auto 40px' }}>
+            Have questions or feedback? We'd love to hear from you. Our team typically responds within 24 hours.
+          </p>
+          <div style={{ display: 'flex', gap: '32px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {[
+              { icon: <Mail size={20} />, label: 'Email', value: 'hello@civicfix.in' },
+              { icon: <Phone size={20} />, label: 'Phone', value: '+91 98765 43210' },
+              { icon: <MapPin size={20} />, label: 'Office', value: 'Chennai, Tamil Nadu 600001' },
+            ].map((c, i) => (
+              <div key={i} className="glass-card" style={{ padding: '24px', minWidth: '240px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--bg-primary)', flexShrink: 0 }}>
+                  {c.icon}
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{c.label}</div>
+                  <div style={{ fontWeight: 600, fontSize: '1rem' }}>{c.value}</div>
+                </div>
               </div>
-            </div>
-
-            <div className="glass-card" style={{ padding: '28px' }}>
-              <form onSubmit={handleSend} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div className="form-group">
-                  <label className="form-label">{t('contact_name')}</label>
-                  <input type="text" className="form-input" placeholder="Your full name" value={form.name} onChange={e => set('name', e.target.value)} required />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">{t('contact_email')}</label>
-                  <input type="email" className="form-input" placeholder="you@example.com" value={form.email} onChange={e => set('email', e.target.value)} required />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">{t('contact_message')}</label>
-                  <textarea className="form-input" placeholder="Your message..." rows={4} value={form.message} onChange={e => set('message', e.target.value)} required style={{ resize: 'vertical' }} />
-                </div>
-                <button type="submit" className="btn btn-primary btn-lg" disabled={sending} style={{ justifyContent: 'center' }}>
-                  {sending ? 'Sending...' : <><Send size={15} /> {t('contact_send')}</>}
-                </button>
-              </form>
-            </div>
+            ))}
           </div>
         </div>
       </section>

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import API_BASE_URL from '../config';
 
 const IssueContext = createContext();
 
@@ -12,12 +13,12 @@ export function IssueProvider({ children }) {
   const normalizeImageUrl = (url) => {
     if (!url) return 'https://placehold.co/600x400/1e293b/a8b2d1?text=No+Image+Available';
     if (url.startsWith('http') || url.startsWith('data:')) return url;
-    return `http://localhost:5000/uploads/${url}`;
+    return `${API_BASE_URL}/uploads/${url}`;
   };
 
   const fetchDepartments = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/issues/departments');
+      const response = await fetch(`${API_BASE_URL}/api/issues/departments`);
       const data = await response.json();
       if (response.ok) setDepartments(data);
     } catch (err) { console.error('Dept fetch error:', err); }
@@ -25,7 +26,7 @@ export function IssueProvider({ children }) {
 
   const fetchIssues = async (filters = {}) => {
     const query = new URLSearchParams(filters).toString();
-    const response = await fetch(`http://localhost:5000/api/issues?${query}`);
+    const response = await fetch(`${API_BASE_URL}/api/issues?${query}`);
     const data = await response.json();
     if (response.ok) {
       setIssues(data.map(i => ({ 
@@ -46,7 +47,7 @@ export function IssueProvider({ children }) {
     if (!token) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/issues/${issueId}/like`, {
+      const response = await fetch(`${API_BASE_URL}/api/issues/${issueId}/like`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -65,7 +66,7 @@ export function IssueProvider({ children }) {
     if (!token) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/issues/${issueId}/comments`, {
+      const response = await fetch(`${API_BASE_URL}/api/issues/${issueId}/comments`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ export function IssueProvider({ children }) {
       headers['Content-Type'] = 'application/json';
     }
 
-    const response = await fetch('http://localhost:5000/api/issues', {
+    const response = await fetch(`${API_BASE_URL}/api/issues`, {
       method: 'POST',
       headers,
       body
@@ -115,7 +116,7 @@ export function IssueProvider({ children }) {
 
   const updateIssueStatus = async (issueId, status) => {
     const token = localStorage.getItem('civicfix_token');
-    const response = await fetch(`http://localhost:5000/api/admin/issues/${issueId}/status`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/issues/${issueId}/status`, {
       method: 'PATCH',
       headers: { 
         'Content-Type': 'application/json',
@@ -144,7 +145,7 @@ export function IssueProvider({ children }) {
   };
 
   const fetchIssueById = async (id) => {
-    const response = await fetch(`http://localhost:5000/api/issues/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/issues/${id}`);
     const data = await response.json();
     if (response.ok) {
       const issue = { ...data, id: data._id, imageUrl: normalizeImageUrl(data.imageUrl) };
@@ -159,7 +160,7 @@ export function IssueProvider({ children }) {
   };
 
   const fetchComments = async (issueId) => {
-    const response = await fetch(`http://localhost:5000/api/issues/${issueId}/comments`);
+    const response = await fetch(`${API_BASE_URL}/api/issues/${issueId}/comments`);
     const data = await response.json();
     if (response.ok) {
       setIssues(prev => prev.map(i => i._id === issueId ? { ...i, comments: data } : i));
@@ -173,7 +174,7 @@ export function IssueProvider({ children }) {
     if (!token) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/issues/${issueId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/issues/${issueId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -192,7 +193,7 @@ export function IssueProvider({ children }) {
     if (!token) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/issues/${issueId}/reassign`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/issues/${issueId}/reassign`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',

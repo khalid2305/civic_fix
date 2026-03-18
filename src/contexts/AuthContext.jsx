@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import API_BASE_URL from '../config';
 
 const AuthContext = createContext();
 
@@ -16,7 +17,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const response = await fetch('http://localhost:5000/api/auth/login', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -33,7 +34,7 @@ export function AuthProvider({ children }) {
   };
 
   const loginWithGoogle = async () => {
-    const response = await fetch('http://localhost:5000/api/auth/google', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ idToken: 'mock_google_token' })
@@ -50,7 +51,7 @@ export function AuthProvider({ children }) {
   };
 
   const loginWithOTP = async (phone, otp) => {
-    const response = await fetch('http://localhost:5000/api/auth/otp-verify', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/otp-verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, otp })
@@ -69,7 +70,7 @@ export function AuthProvider({ children }) {
   };
 
   const sendOTP = async (phone) => {
-    const response = await fetch('http://localhost:5000/api/auth/otp-send', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/otp-send`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone })
@@ -81,7 +82,7 @@ export function AuthProvider({ children }) {
   };
 
   const register = async (name, email, phone, password) => {
-    const response = await fetch('http://localhost:5000/api/auth/register', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, phone, password })
